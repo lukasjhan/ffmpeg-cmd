@@ -13,7 +13,7 @@ export const output = (stream: Stream, filename: string, kwargs: {[key: string]:
 }
 
 export const compile = (streamSpec: Stream, cmd: string = 'ffmpeg', overWriteOutput: boolean = false) => {
-  const cmds: string[] = [cmd, '-hide_banner', ...getArgs(streamSpec)];
+  const cmds: string[] = [cmd, '-hide_banner', ...getArgs(streamSpec).filter(spec => spec.length > 0)];
   if (overWriteOutput) {
     cmds.push('-y');
   }
