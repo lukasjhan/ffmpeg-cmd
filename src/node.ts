@@ -68,7 +68,7 @@ export class OutputStream extends Stream {
     super(upstreamNode, upstreamLabel, upstreamSelector);
   }
 
-  public compile = (cmd: string = 'ffmpeg', overWriteOutput: boolean = false) => {
+  public compile = (cmd: string = 'ffmpeg', overWriteOutput: boolean = true) => {
     return compile(this, cmd, overWriteOutput);
   }
 }
