@@ -83,11 +83,11 @@ export class KwargReprNode implements DagNode {
 
   public name: string;
   private incomingEdgeMap: IncomingEdgeMap;
-  public kwargs: {[key: string]: string };
+  public kwargs: Record<string, string> | string[];
   public readonly hash: number;
   private incomingEdges: DagEdge[];
 
-  constructor(incomingEdgeMap: any, name: string, kwargs: {[key: string]: string }) {
+  constructor(incomingEdgeMap: any, name: string, kwargs: Record<string, string> | string[]) {
     this.name = name;
     this.kwargs = kwargs;
     this.incomingEdgeMap = incomingEdgeMap;

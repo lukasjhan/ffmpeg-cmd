@@ -1,13 +1,13 @@
 import { DagEdge, DagNode, getOutgoingEdges, KwargReprNode, OutgoingEdgeMap, topoSort } from "./daq";
-import { FilterNode, getStreamSpecNode, InputNode, OutputNode, OutputStream, Stream } from "./node";
+import { FilterNode, getStreamSpecNode, InputNode, OutputNode, Stream } from "./node";
 import { filterUndefined } from './utils';
 
-export const input = (filename: string, kwargs: {[key: string]: string } = {}) => {
+export const input = (filename: string, kwargs: Record<string, string> | string[] = {}) => {
   kwargs['filename'] = filename;
-  return new InputNode('input', [], kwargs).stream();
+  return new InputNode('input', kwargs).stream();
 }
 
-export const output = (stream: Stream, filename: string, kwargs: {[key: string]: string } = {}) => {
+export const output = (stream: Stream, filename: string, kwargs: Record<string, string> | string[] = {}) => {
   kwargs['filename'] = filename;
   return new OutputNode(stream, 'output', kwargs).stream();
 }
@@ -20,7 +20,7 @@ export const compile = (streamSpec: Stream, cmd: string = 'ffmpeg', overWriteOut
   return cmds;
 }
 
-export const filter = (streamSpec: Stream | Stream[], filterName: string, kwargs: {[key: string]: string } = {}) => {
+export const filter = (streamSpec: Stream | Stream[], filterName: string, kwargs: Record<string, string> | string[] = {}) => {
   return new FilterNode(streamSpec, filterName, kwargs).stream();
 }
 
@@ -162,7 +162,11 @@ const getInputArgs = (inputNode: KwargReprNode) => {
   return args;
 }
 
-const convertKwargsToCmdArgs = (kwargs: {[key: string]: string}) => {
+const convertKwargsToCmdArgs = (kwargs: Record<string, string> | string[]) => {
+  if (Array.isArray(kwargs)) {
+    return kwargs;
+  }
+
   const args: string[] = [];
   for (const key of Object.keys(kwargs)) {
     if (key === 'filename') continue;
@@ -170,5 +174,6 @@ const convertKwargsToCmdArgs = (kwargs: {[key: string]: string}) => {
     args.push(`-${key}`);
     args.push(value);
   }
+  
   return args;
 }

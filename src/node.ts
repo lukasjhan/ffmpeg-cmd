@@ -54,11 +54,11 @@ export class FilterableStream extends Stream {
     super(upstreamNode, upstreamLabel, upstreamSelector);
   }
 
-  public output = (filename: string, kwargs: {[key: string]: string } = {}) => {
+  public output = (filename: string, kwargs: Record<string, string> | string[] = {}) => {
     return output(this, filename, kwargs);
   }
 
-  public filter = (filterName: string, kwargs: {[key: string]: string }) => {
+  public filter = (filterName: string, kwargs: Record<string, string> | string[]) => {
     return filter(this, filterName, kwargs);
   }
 }
@@ -117,7 +117,7 @@ class Node extends KwargReprNode {
     name: string,
     incomingStreamType: STREAM_TYPE | null,
     outgoingStreamType: STREAM_TYPE,
-    kwargs: {[key: string]: string } = {},
+    kwargs: Record<string, string> | string[] = {},
   ) {
     super(incomingEdgeMap, name, kwargs);
     this.incomingStreamType = incomingStreamType;
@@ -139,7 +139,7 @@ class Node extends KwargReprNode {
 }
 
 export class InputNode extends Node {
-  constructor(name: string, args: string[] = [], kwarg: any = {}) {
+  constructor(name: string, kwarg: any = {}) {
     super(new Map(), name, null, STREAM_TYPE.FILTERABLE_STREAM, kwarg);
   }
   
@@ -149,7 +149,7 @@ export class InputNode extends Node {
 }
 
 export class FilterNode extends Node {
-  constructor(streamSpec: Stream | Stream[], name: string, kwargs: {[key: string]: string }= {}) {
+  constructor(streamSpec: Stream | Stream[], name: string, kwargs: Record<string, string> | string[] = {}) {
     super(getIncomingEdgeMap(getStreamMap(streamSpec)), name, STREAM_TYPE.FILTERABLE_STREAM, STREAM_TYPE.FILTERABLE_STREAM, kwargs);
   }
 
@@ -177,7 +177,7 @@ export class FilterNode extends Node {
 }
 
 export class OutputNode extends Node {
-  constructor(stream: Stream | Stream[], name: string, kwargs: {[key: string]: string } = {}) {
+  constructor(stream: Stream | Stream[], name: string, kwargs: Record<string, string> | string[] = {}) {
     super(getIncomingEdgeMap(getStreamMap(stream)), name, STREAM_TYPE.FILTERABLE_STREAM, STREAM_TYPE.OUTPUT_STREAM, kwargs);
   }
 

@@ -22,12 +22,32 @@ describe('FFMPEG COMMAND GENERATION TEST', function() {
     expect(output.compile('./ffmpeg', false).join(' ')).toEqual('./ffmpeg -hide_banner -f concat -safe 0 -c copy -i list.txt output.mp4');
   });
 
-  it('TEST', () => {
+  it('CONCAT #2', () => {
     const concat = ffmpeg.input('list.txt', {f: 'concat', safe: '0'});
-    const filter = ffmpeg.filter(concat.audio(), 'aresample', {'async': '1000'});
-    const output = filter.output('output.mp4', {'c:v': 'copy'});
-    expect(output.compile().join(' ')).toEqual('');
+    const output = concat.output('output.mp4', ['-c:v', 'copy', '-af', 'aresample=async=1000', '-map', '0:V', '-map', '0:a?']);
+    expect(output.compile('./ffmpeg').join(' ')).toEqual('./ffmpeg -hide_banner -f concat -safe 0 -i list.txt -c:v copy -af aresample=async=1000 -map 0:V -map 0:a? output.mp4 -y');
   })
+
+  it('VIDEO FILTER #1', () => {
+    const input = ffmpeg.input('input.mp4');
+    const filter = ffmpeg.filter(input.video(), 'hflip', {x: '10', y: '20'});
+    const output = filter.output('output.mp4');
+    expect(output.compile().join(' ')).toEqual('ffmpeg -hide_banner -i input.mp4 -filter_complex [0:v]hflip=x=10:y=20[s0] -map [s0] output.mp4 -y');
+  });
+
+  it('AUDIO FILTER #1', () => {
+    const input = ffmpeg.input('input.mp4');
+    const filter = ffmpeg.filter(input.audio(), 'afade', {t: 'in', st: '2', d: '3'});
+    const output = filter.output('output.mp4');
+    expect(output.compile().join(' ')).toEqual('ffmpeg -hide_banner -i input.mp4 -filter_complex [0:a]afade=t=in:st=2:d=3[s0] -map [s0] output.mp4 -y');
+  });
+
+  it('COMBINED SEEK #1', () => {
+    const input = ffmpeg.input('input.mp4', { ss: '0', t: '10'});
+    const filter = input.filter('fps', { fps: '30'});
+    const output = filter.output('output.mp4');
+    expect(output.compile().join(' ')).toEqual('ffmpeg -hide_banner -ss 0 -t 10 -i input.mp4 -filter_complex [0]fps=fps=30[s0] -map [s0] output.mp4 -y');
+  });
 });
 
 /*
