@@ -58,7 +58,7 @@ export class FilterableStream extends Stream {
     return output(this, filename, kwargs);
   }
 
-  public filter = (filterName: string, kwargs: Record<string, string> | string[]) => {
+  public filter = (filterName: string, kwargs: Record<string, string> | string[] = {}) => {
     return filter(this, filterName, kwargs);
   }
 }
@@ -139,7 +139,7 @@ class Node extends KwargReprNode {
 }
 
 export class InputNode extends Node {
-  constructor(name: string, kwarg: any = {}) {
+  constructor(name: string, kwarg: Record<string, string> | string[] = {}) {
     super(new Map(), name, null, STREAM_TYPE.FILTERABLE_STREAM, kwarg);
   }
   
